@@ -1,10 +1,9 @@
 #include "list.h"
 
-
 void addSort(list_elem*& list, string value) 
 {
 	auto new_el = new list_elem;
-	new_el->value = value;
+	new_el->value = value; 
 	list_elem* curr = list;
 	while (curr && curr->next && value > curr->next->value) {
 		curr = curr->next;
@@ -21,7 +20,6 @@ void addSort(list_elem*& list, string value)
 	}
 	else list = new_el;
 }
-
 
 bool get(const list_elem* list, int position, string& result)
 {
@@ -82,15 +80,12 @@ void clear(list_elem*& list)
 	list = nullptr;
 }
 
-// ДОБАВИЛ
-
 void add(list_elem*& list, string value)
 {
-    // Проверка на существование значения
     list_elem* curr_check = list;
     while (curr_check != nullptr) {
         if (curr_check->value == value) {
-            return; // Значение уже существует, не добавляем
+            return;
         }
         curr_check = curr_check->next;
     }
@@ -107,11 +102,10 @@ void add(list_elem*& list, string value)
 
 bool insert(list_elem*& list, string value, int position)
 {
-    // Проверка на существование значения
     list_elem* curr_check = list;
     while (curr_check != nullptr) {
         if (curr_check->value == value) {
-            return false; // Значение уже существует
+            return false;
         }
         curr_check = curr_check->next;
     }

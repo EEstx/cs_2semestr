@@ -61,7 +61,6 @@ int main() {
     }
     file.close();
 
-    //  Средние баллы по предметам
     double averages[4] = {0};
     for (const auto& s : students) {
         for (int i = 0; i < 4; i++) {
@@ -76,7 +75,6 @@ int main() {
          << "Средний балл по физике: " << averages[2] << "\n"
          << "Средний балл по истории: " << averages[3] << endl;
 
-    //  Максимальная сумма баллов
     int max_sum = 0;
     for (const auto& s : students) {
         int sum = s.marks[0] + s.marks[1] + s.marks[2] + s.marks[3];
@@ -84,7 +82,6 @@ int main() {
     }
     cout << "Максимальная сумма баллов: " << max_sum << endl;
 
-    //  Список учащихся с максимальной суммой
     vector<Student> top_students;
     for (const auto& s : students) {
         int sum = s.marks[0] + s.marks[1] + s.marks[2] + s.marks[3];
@@ -100,7 +97,6 @@ int main() {
         cout << s.surname << " " << s.name << "\n";
     }
 
-    //Количество учащихся с хотя бы одной двойкой
     int count = 0;
     for (const auto& s : students) {
         for (int mark : s.marks) {
