@@ -1,65 +1,66 @@
 #include <iostream>
 #include <fstream>
-#include <vector>
 #include <climits>
+#include <queue>
 
 using namespace std;
 
-vector<int> readData(const string& filename) {
+struct MaxResults {
+    int exact5 = INT_MIN;    // Для задачи 1
+    int upTo5 = INT_MIN;     // Для задачи 2
+    int over5 = INT_MIN;     // Для задачи 3
+};
+
+MaxResults processData(const string& filename) {
     ifstream file(filename);
-    vector<int> data;
-    int n, num;
-    if (file >> n) {
-        for (int i = 0; i < n; ++i) {
-            if (file >> num) {
-                data.push_back(num);
-            }
-        }
+    int n;
+    if (!(file >> n) || n <= 5) {
+        cerr << "Invalid input" << endl;
+        exit(1);
     }
-    return data;
-}
 
-// Задача 1: Ровно 5 секунд разницы (индексы i и i+5)
-int findMaxSumExact5(const vector<int>& data) {
-    int maxSum = INT_MIN;
-    for (int i = 0; i < static_cast<int>(data.size()) - 5; ++i) {
-        maxSum = max(maxSum, data[i] + data[i + 5]);
-    }
-    return maxSum;
-}
+    MaxResults result;
+    queue<int> last5;        // Хранит последние 5 элементов для задачи 2
+    int maxPrev = INT_MIN;    // Максимум из элементов старше 5 секунд
+    int pos = 0;             // Текущая позиция
 
-// Задача 2: Не более 5 секунд (индексы i и j, где 1 ≤ j-i ≤ 5)
-int findMaxSumUpTo5(const vector<int>& data) {
-    int maxSum = INT_MIN;
-    for (int i = 0; i < data.size(); ++i) {
-        for (int j = i + 1; j <= min(i + 5, static_cast<int>(data.size()) - 1); ++j) {
-            maxSum = max(maxSum, data[i] + data[j]);
-        }
-    }
-    return maxSum;
-}
+    int current;
+    while (file >> current) {
+        pos++;
 
-// Задача 3: Более 5 секунд (индексы i и j, где j-i > 5)
-int findMaxSumOver5(const vector<int>& data) {
-    int maxSum = INT_MIN;
-    for (int i = 0; i < data.size(); ++i) {
-        for (int j = i + 6; j < data.size(); ++j) {
-            maxSum = max(maxSum, data[i] + data[j]);
+        // Задача 1: ровно 5 секунд разницы
+        if (pos > 5) {
+            int prev = last5.front();
+            result.exact5 = max(result.exact5, prev + current);
         }
+
+        // Задача 2: не более 5 секунд разницы
+        if (!last5.empty()) {
+            int localMax = current + last5.back(); // Проверяем с последним в очереди
+            result.upTo5 = max(result.upTo5, localMax);
+        }
+
+        // Задача 3: более 5 секунд разницы
+        if (maxPrev != INT_MIN) {
+            result.over5 = max(result.over5, current + maxPrev);
+        }
+
+        // Обновляем историю для следующих итераций
+        if (pos > 5) {
+            maxPrev = max(maxPrev, last5.front());
+            last5.pop();
+        }
+
+        last5.push(current);
     }
-    return maxSum;
+
+    return result;
 }
 
 int main() {
-    vector<int> data = readData("queue.dat");
-    if (data.size() <= 5) {
-        cerr << "Ошибка: недостаточно данных (N ≤ 5)" << endl;
-        return 1;
-    }
-
-    cout << "1. Максимальная сумма (разница 5 сек): " << findMaxSumExact5(data) << endl;
-    cout << "2. Максимальная сумма (разница ≤5 сек): " << findMaxSumUpTo5(data) << endl;
-    cout << "3. Максимальная сумма (разница >5 сек): " << findMaxSumOver5(data) << endl;
-
+    MaxResults res = processData("queue.dat");
+    cout << "1. Максимальная сумма (разница 5 сек): " << res.exact5 << endl;
+    cout << "2. Максимальная сумма (разница ≤5 сек): " << res.upTo5 << endl;
+    cout << "3. Максимальная сумма (разница >5 сек): " << res.over5 << endl;
     return 0;
 }
